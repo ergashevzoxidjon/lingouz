@@ -1,0 +1,26 @@
+{
+  "appId": "uz.mylogo.lingouz",
+  "appName": "LingoUz Kids",
+  "webDir": "www",
+  "backgroundColor": "#FFF1D6",
+  "server": {
+    "androidScheme": "https",
+    "iosScheme": "capacitor"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1200,
+      "backgroundColor": "#FFF1D6",
+      "androidScaleType": "CENTER_CROP",
+      "showSpinner": false
+    }
+  },
+  "ios": {
+    "contentInset": "never",
+    "backgroundColor": "#FFF1D6"
+  },
+  "android": {
+    "backgroundColor": "#FFF1D6",
+    "allowMixedContent": false
+  }
+}

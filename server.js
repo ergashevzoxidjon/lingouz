@@ -88,7 +88,19 @@ function statsFor(u) {
 const csvCell = v => { let s = String(v == null ? '' : v); if (/^[=+\-@]/.test(s)) s = "'" + s; return '"' + s.replace(/"/g, '""') + '"'; };
 
 /* ---------- API ---------- */
+// Native ilova (Capacitor: iOS `capacitor://localhost`, Android `https://localhost`) serverga boshqa "origin"dan murojaat qiladi — faqat shu aniq manbalarga ruxsat (token Authorization sarlavhasida, cookie yo'q).
+const CORS_ORIGINS = new Set(['capacitor://localhost', 'ionic://localhost', 'https://localhost', 'http://localhost']);
+function cors(req, res) {
+  const o = req.headers.origin;
+  if (o && CORS_ORIGINS.has(o)) {
+    res.setHeader('Access-Control-Allow-Origin', o); res.setHeader('Vary', 'Origin');
+    res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type'); res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Max-Age', '86400');
+  }
+}
 async function api(req, res, url) {
+  cors(req, res);
+  if (req.method === 'OPTIONS') { res.writeHead(204); return res.end(); }
   const p = url.pathname, m = req.method;
   let body = {};
   if (m === 'POST' || m === 'PUT' || m === 'PATCH') {
@@ -198,7 +210,7 @@ function serveStatic(req, res, url) {
       res.writeHead(206, { 'Content-Type': 'audio/mpeg', 'Content-Range': `bytes ${s}-${e}/${data.length}`, 'Content-Length': e - s + 1, 'Accept-Ranges': 'bytes', 'Cache-Control': 'no-cache', 'X-Content-Type-Options': 'nosniff' });
       return res.end(data.subarray(s, e + 1));
     }
-    res.writeHead(200, { 'Content-Type': MIME[path.extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-cache', 'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'DENY', 'Referrer-Policy': 'no-referrer' });
+    res.writeHead(200, { 'Content-Type': MIME[path.extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-cache', 'X-Content-Type-Options': 'nosniff', ...(process.env.ALLOW_FRAME ? {} : { 'X-Frame-Options': 'DENY' }), 'Referrer-Policy': 'no-referrer' });   // ALLOW_FRAME faqat mahalliy moslashuv sinovi uchun
     res.end(req.method === 'HEAD' ? undefined : data);
   });
 }

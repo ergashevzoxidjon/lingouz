@@ -9,6 +9,7 @@ PAGES.home = () => {
   const d = S.daily, dt = d && T(d.tid), g = d && GAMES.find(x => x.id === d.gid);
   const wk = Math.min(30, S.stars - (S.weekly ? S.weekly.base : 0)), due = dueCount();
   return `
+${installBanner()}
 <section class="hero">
   <div>
     <span class="tag">🇺🇿 1–4-sinflar uchun AI ingliz tili</span>

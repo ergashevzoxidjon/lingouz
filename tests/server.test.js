@@ -99,3 +99,12 @@ test('prefiks (mylogo.uz/lingouz/) bilan ishlash: slash qo‘shiladi, API va sta
   assert.equal((await call('GET', '/lingouz/base.js')).status, 200);
   const l = await call('POST', '/lingouz/api/login', { login: 'admin', password: 'newpassword1' }); assert.equal(l.status, 200);
 });
+
+test('CORS: faqat native ilova manbalariga ruxsat (iOS/Android Capacitor)', async () => {
+  const pre = await fetch(base + '/api/login', { method: 'OPTIONS', headers: { Origin: 'capacitor://localhost', 'Access-Control-Request-Method': 'POST', 'Access-Control-Request-Headers': 'authorization,content-type' } });
+  assert.equal(pre.status, 204); assert.equal(pre.headers.get('access-control-allow-origin'), 'capacitor://localhost');
+  assert.match(pre.headers.get('access-control-allow-headers'), /Authorization/);
+  const ok = await fetch(base + '/api/me', { headers: { Origin: 'https://localhost' } }); assert.equal(ok.headers.get('access-control-allow-origin'), 'https://localhost');
+  const evil = await fetch(base + '/api/me', { headers: { Origin: 'https://evil.example' } }); assert.equal(evil.headers.get('access-control-allow-origin'), null);
+  const evilPre = await fetch(base + '/api/login', { method: 'OPTIONS', headers: { Origin: 'https://evil.example' } }); assert.equal(evilPre.headers.get('access-control-allow-origin'), null);
+});

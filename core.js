@@ -64,10 +64,29 @@ function bestVoice() {
   const pref = /Aria|Jenny|Samantha|Google US English|Google UK English Female|Zira|Natural|Online/i;
   return VOICES.find(v => pref.test(v.name) && /en-(US|GB)/i.test(v.lang)) || VOICES.find(v => /en-US/i.test(v.lang)) || VOICES[0] || null;
 }
+/* iOS/Android: bitta audio element foydalanuvchining birinchi bosishi bilan "ochiladi", keyin o'yin ichida avtomatik ovoz ham chiqadi */
+const AUD = new Audio(); let audRes = null, audSeq = 0, audioUnlocked = false;
+function endAudio() { if (audRes) { const r = audRes; audRes = null; r(); } }
+function silentWav() {   // 0,1 soniyalik jim WAV (fayl va manifestga bog'liq emas)
+  const n = 800, b = new DataView(new ArrayBuffer(44 + n)), w = (o, s) => [...s].forEach((c, i) => b.setUint8(o + i, c.charCodeAt(0)));
+  w(0, 'RIFF'); b.setUint32(4, 36 + n, true); w(8, 'WAVEfmt '); b.setUint32(16, 16, true); b.setUint16(20, 1, true); b.setUint16(22, 1, true); b.setUint32(24, 8000, true); b.setUint32(28, 8000, true); b.setUint16(32, 1, true); b.setUint16(34, 8, true); w(36, 'data'); b.setUint32(40, n, true);
+  for (let i = 0; i < n; i++) b.setUint8(44 + i, 128);
+  return URL.createObjectURL(new Blob([b], { type: 'audio/wav' }));
+}
+function unlockAudio() {
+  if (audioUnlocked) return; audioUnlocked = true;
+  try {
+    AUD.muted = true; AUD.src = silentWav(); const pr = AUD.play();
+    const done = () => { AUD.pause(); AUD.muted = false; AUD.removeAttribute('src'); };
+    if (pr && pr.then) pr.then(done).catch(() => { AUD.muted = false; audioUnlocked = false; }); else done();
+    if ('speechSynthesis' in window) { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); }   // iOS TTS ham shu bosish bilan ochiladi
+  } catch (e) { audioUnlocked = false; }
+}
+['touchstart', 'pointerdown', 'click', 'keydown'].forEach(ev => document.addEventListener(ev, unlockAudio, { passive: true }));
 function speak(t, rate) {
   return new Promise(res => {
     rate = rate || ST.settings.rate;
-    if (curAudio) { curAudio.pause(); curAudio = null; }
+    endAudio(); if (curAudio) curAudio.pause();
     if (!ST.settings.sound) { toast('🔇 ' + t); return setTimeout(res, 700); }
     const sl = LG.slug(t);
     const robot = () => {   // zaxira: brauzer ovozi (faqat yozib olingan audio topilmasa)
@@ -78,15 +97,17 @@ function speak(t, rate) {
       u.onend = u.onerror = () => res(); speechSynthesis.speak(u);
     };
     if (ST.settings.natural !== false && AUDIO.has(sl)) {       // tabiiy neyron ovoz (audio/*.mp3)
-      const a = curAudio = new Audio('audio/' + sl + '.mp3'); a.preservesPitch = true; a.playbackRate = rate / .85;
-      a.onended = () => res(); a.onerror = () => { if (curAudio === a) robot(); else res(); };
-      a.play().catch(() => { if (curAudio === a) robot(); else res(); }); return;
+      endAudio(); const id = ++audSeq; curAudio = AUD; audRes = res;
+      AUD.onended = () => { if (id === audSeq) endAudio(); }; AUD.onerror = () => { if (id === audSeq) { audRes = null; robot(); } };
+      AUD.preservesPitch = true; AUD.muted = false; AUD.src = 'audio/' + sl + '.mp3'; AUD.playbackRate = rate / .85;
+      const pr = AUD.play(); if (pr && pr.catch) pr.catch(() => { if (id === audSeq) { audRes = null; robot(); } });   // AbortError (boshqa ovoz boshlandi) — jim
+      return;
     }
     robot();
   });
 }
 let playTok = 0;
-function stopSound() { playTok++; if ('speechSynthesis' in window) speechSynthesis.cancel(); if (curAudio) { curAudio.pause(); curAudio = null; } stopMusic(); }
+function stopSound() { playTok++; if ('speechSynthesis' in window) speechSynthesis.cancel(); audSeq++; if (curAudio) curAudio.pause(); endAudio(); stopMusic(); }
 async function playLines(lines, withMusic) {
   const t = ++playTok; if (withMusic) startMusic();
   for (let i = 0; i < lines.length; i++) {
@@ -231,3 +252,19 @@ ACT.profiles = () => {
   <p class="muted">Sinfni faqat administrator o‘zgartiradi.</p><div class="row" style="justify-content:center"><button class="btn sm ghost" id="acOut">🚪 Chiqish</button><button class="btn sm" id="acClose">Yopish</button></div></div>`);
   $('#acClose', d).onclick = () => d.close(); $('#acOut', d).onclick = () => Net.logout();
 };
+
+/* ---------- Bosh ekranga o'rnatish (PWA): Android tugmasi, iPhone ko'rsatmasi ---------- */
+let deferredInstall = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredInstall = e; if (location.hash === '' || location.hash === '#/home') route(); });
+window.addEventListener('appinstalled', () => { deferredInstall = null; toast('📲 Ilova o‘rnatildi!'); });
+const isStandalone = () => !!(window.LINGO_NATIVE || navigator.standalone || (window.matchMedia && matchMedia('(display-mode: standalone)').matches));
+const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+function installBanner() {
+  let hidden = false; try { hidden = localStorage.getItem('lingouz-install-hide') === '1'; } catch (e) { /* ... */ }
+  if (hidden || isStandalone()) return '';
+  if (deferredInstall) return `<div class="install"><span style="font-size:2rem">📲</span><div class="grow"><b>Ilovani telefoningizga o‘rnating</b><small>Bosh ekranda belgi paydo bo‘ladi, internetsiz ham ishlaydi.</small></div><button class="btn sm" data-act="install">O‘rnatish</button><button class="x" data-act="installHide" aria-label="Yopish">✕</button></div>`;
+  if (isIOS()) return `<div class="install"><span style="font-size:2rem">📲</span><div class="grow"><b>iPhone/iPad: bosh ekranga qo‘shing</b><small>Safari'da pastdagi <b style="display:inline">Ulashish ⎙</b> tugmasini bosing → «<b style="display:inline">Bosh ekranga qo‘shish</b>». Shunda ilova to‘liq ekranda ochiladi.</small></div><button class="x" data-act="installHide" aria-label="Yopish">✕</button></div>`;
+  return '';
+}
+ACT.install = async () => { if (!deferredInstall) return; deferredInstall.prompt(); try { await deferredInstall.userChoice; } catch (e) { /* ... */ } deferredInstall = null; route(); };
+ACT.installHide = () => { try { localStorage.setItem('lingouz-install-hide', '1'); } catch (e) { /* ... */ } route(); };

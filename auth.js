@@ -6,7 +6,7 @@ const Net = {
   syncTimer: null, dirty: false,
 
   async api(path, opt = {}) {
-    const r = await NETFETCH(path, { method: opt.method || 'GET', headers: { 'Content-Type': 'application/json', ...(this.token ? { Authorization: 'Bearer ' + this.token } : {}) }, body: opt.body ? JSON.stringify(opt.body) : undefined, keepalive: !!opt.keepalive });
+    const r = await NETFETCH((window.LINGO_API || '') + path, { method: opt.method || 'GET', headers: { 'Content-Type': 'application/json', ...(this.token ? { Authorization: 'Bearer ' + this.token } : {}) }, body: opt.body ? JSON.stringify(opt.body) : undefined, keepalive: !!opt.keepalive });
     let data = {}; try { data = await r.json(); } catch (e) { /* bo'sh javob */ }
     if (r.status === 404 && !data.error) throw Object.assign(new Error('Server topilmadi. Sahifani «node server.js» orqali oching (http://localhost:5173).'), { status: 0 });
     if (!r.ok) throw Object.assign(new Error(data.error || 'Xato'), { status: r.status });

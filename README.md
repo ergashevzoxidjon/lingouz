@@ -29,6 +29,9 @@ Ranglar (50, rang namunasi bilan), Sonlar (50, raqam belgisi bilan), Hayvonlar (
 - Baza `~/lingouz/server/db.json` da qoladi (repoda yo'q, deploy uni o'chirmaydi). Vaqti-vaqti bilan nusxa oling.
 - Birinchi admin paroli `~/lingouz/tmp/passenger.log` ga bir marta yozilgan; kirgach o'zgartiring.
 
+## Mobil: iPhone va Android
+Veb + PWA (bosh ekranga o'rnatish) hozir ishlaydi; native Android/iOS ilova loyihalari Capacitor bilan tayyor (`android/`, `ios/`). Batafsil, yig'ish va do'konga chiqarish: [docs/MOBILE.md](docs/MOBILE.md). Qisqacha: `npm install` → `npm run android` (Android Studio) / `npm run ios` (Mac + Xcode).
+
 ## Xavfsizlik va cheklovlar (halol hisobot)
 - Parollar `scrypt` bilan xeshlanadi; token HMAC bilan imzolanadi (o'quvchi 30 kun, admin 12 soat); login urinishlari cheklangan (5 ta xato → 1 daqiqa); maxfiy fayllar (`server/`, `server.js`, `tests/`, `docs/`) HTTP orqali berilmaydi (testlangan); CSP sarlavhalari va CSV-injeksiyadan himoya bor.
 - **Internetda ishlatishdan oldin HTTPS (reverse proxy: nginx/Caddy) shart** — aks holda parollar ochiq uzatiladi. Server o'zi HTTPS bermaydi.

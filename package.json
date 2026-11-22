@@ -1,11 +1,26 @@
 {
   "name": "lingouz-kids",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "private": true,
-  "description": "LingoUz Kids — 1–4-sinf uchun ingliz tili platformasi (Node serveri, admin paneli, PWA)",
+  "description": "LingoUz Kids — 1–4-sinf uchun ingliz tili (veb + PWA + Android/iOS ilova: Capacitor)",
   "scripts": {
     "test": "node --test tests/",
     "start": "node server.js",
-    "emoji": "node tools/get-emoji.js"
+    "emoji": "node tools/get-emoji.js",
+    "build:www": "node tools/build-www.js",
+    "cap:sync": "node tools/build-www.js && npx cap sync",
+    "assets": "npx capacitor-assets generate --assetPath resources",
+    "android": "node tools/build-www.js && npx cap sync android && npx cap open android",
+    "ios": "node tools/build-www.js && npx cap sync ios && npx cap open ios",
+    "android:apk": "node tools/build-www.js && npx cap sync android && cd android && gradlew.bat assembleDebug"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.6.2",
+    "@capacitor/core": "^8.6.2",
+    "@capacitor/android": "^8.6.2",
+    "@capacitor/ios": "^8.6.2",
+    "@capacitor/splash-screen": "^8.0.2",
+    "@capacitor-community/speech-recognition": "^7.0.1",
+    "@capacitor/assets": "^4.0.0"
   }
 }

@@ -19,6 +19,6 @@ async function startApp() {
   document.body.classList.remove('logged-out'); $('#login').innerHTML = '';
   $('#logo-m').innerHTML = mascot('happy'); $('#logo-m2').innerHTML = mascot('happy');
   applyGrade(); initDay(); route();
-  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => { /* oflayn rejim ixtiyoriy */ });
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http') && !window.LINGO_NATIVE) navigator.serviceWorker.register('sw.js').catch(() => { /* oflayn rejim ixtiyoriy */ });
 }
 if (Net.token) startApp(); else showLogin();

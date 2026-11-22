@@ -1,15 +1,28 @@
 {
-  "name": "LingoUz Kids",
+  "id": "./",
+  "name": "LingoUz Kids — ingliz tili bolalar uchun",
   "short_name": "LingoUz",
-  "description": "1–4-sinf uchun ingliz tili: o'yna, o'rgan, kashf et!",
+  "description": "1–4-sinf uchun ingliz tili: o'yna, o'rgan, kashf et va ingliz tilida so'zla!",
   "lang": "uz",
-  "start_url": "./index.html",
+  "dir": "ltr",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "orientation": "any",
-  "background_color": "#FFF8EE",
-  "theme_color": "#FF8A4C",
+  "background_color": "#FFF1D6",
+  "theme_color": "#6d28d9",
+  "categories": ["education", "kids"],
   "icons": [
-    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ],
+  "shortcuts": [
+    { "name": "Darslar", "short_name": "Darslar", "url": "./#/lessons", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "O'yinlar", "short_name": "O'yinlar", "url": "./#/games", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "AI Coach", "short_name": "Coach", "url": "./#/coach", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
   ]
 }

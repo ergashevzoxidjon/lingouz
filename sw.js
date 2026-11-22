@@ -1,6 +1,6 @@
 /* sw.js — oflayn ishlash (PWA). Versiyani o'zgartirsangiz, kesh yangilanadi. */
-const VER = 'lingouz-v3-4';
-const CORE = ['./', 'index.html', 'ui.css', 'data.js', 'data2.js', 'data3.js', 'logic.js', 'core.js', 'auth.js', 'pages.js', 'games.js', 'coach.js', 'progress.js', 'app.js', 'manifest.webmanifest', 'icons/icon.svg', 'audio/manifest.json', 'base.js'];
+const VER = 'lingouz-v3-5';
+const CORE = ['./', 'index.html', 'ui.css', 'mobile.css', 'data.js', 'data2.js', 'data3.js', 'logic.js', 'core.js', 'auth.js', 'pages.js', 'games.js', 'coach.js', 'progress.js', 'app.js', 'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'audio/manifest.json', 'base.js'];
 self.addEventListener('install', e => {
   e.waitUntil((async () => {
     const c = await caches.open(VER);

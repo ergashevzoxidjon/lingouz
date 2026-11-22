@@ -16,8 +16,8 @@ PAGES.coach = a => {
 <div id="coachChips">${[...t.words.map(w => w.en), t.s.en].map((w, i) => `<button class="chip btnchip ${i === 0 ? 'sel' : ''}" data-act="target" data-w="${esc(w)}">${esc(w)}</button>`).join('')}</div></div>
 <div class="card center" style="margin-top:16px"><div class="muted">Ayting:</div><div id="target" style="font-size:2.2rem;font-weight:900">${esc(t.words[0].en)}</div>
 <div class="row" style="justify-content:center;margin:10px 0"><button class="btn sm ghost" data-act="sayTarget">🔊 Namuna</button><button class="btn sm ghost" data-act="sayTargetSlow">🐢 Sekin</button></div>
-${ST.consent.mic === false || !SR ? micFree() : `<button class="mic" id="mic" data-act="record" aria-label="Yozib olish">🎤</button>`}
-<p id="coachMsg" class="muted">${!SR ? '⚠️ Bu brauzerda ovoz aniqlash yo‘q (Chrome/Edge tavsiya etiladi). Mikrofonsiz rejim ishlaydi.' : ST.consent.mic === null ? 'Mikrofon uchun ota-ona roziligi kerak (tugmani bosganda so‘raladi).' : 'Tugmani bosing va gapiring.'}</p>
+${ST.consent.mic === false || !(SR || nativeSR()) ? micFree() : `<button class="mic" id="mic" data-act="record" aria-label="Yozib olish">🎤</button>`}
+<p id="coachMsg" class="muted">${!(SR || nativeSR()) ? '⚠️ Bu brauzerda ovoz aniqlash yo‘q (Chrome/Edge/Safari tavsiya etiladi). Mikrofonsiz rejim ishlaydi.' : ST.consent.mic === null ? 'Mikrofon uchun ota-ona roziligi kerak (tugmani bosganda so‘raladi).' : 'Tugmani bosing va gapiring.'}</p>
 <div id="coachRes" aria-live="polite"></div></div>
 <div class="card" style="margin-top:16px"><h3>📈 O‘sish</h3>${sparkline(S.speak.map(x => x.s))}</div>
 <div class="card" style="margin-top:16px"><h3>So‘nggi natijalar</h3>${last.length ? last.map(r => `<div class="row" style="justify-content:space-between"><span>${esc(r.w)}</span><b>${r.s}%${r.self ? ' (o‘zim baholadim)' : ''}</b></div>`).join('') : '<span class="muted">Hali natija yo‘q.</span>'}</div>`;
@@ -60,8 +60,23 @@ async function ensureConsent() {
     $('#cNo', d).onclick = () => { ST.consent = { mic: false, ts: Date.now() }; save(); d.close(); res(false); route(); };
   });
 }
+/* Native ilova (Capacitor): @capacitor-community/speech-recognition plagini. Haqiqiy telefonda sinab ko'rilishi kerak. */
+const nativeSR = () => (window.LINGO_NATIVE && window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SpeechRecognition) || null;
+async function recordNative() {
+  const SRn = nativeSR(), mic = $('#mic'), msg = $('#coachMsg'); if (!mic || mic.classList.contains('rec')) return;
+  try {
+    const av = await SRn.available(); if (!av || !av.available) { msg.textContent = 'Bu qurilmada ovoz aniqlash yo‘q. Mikrofonsiz rejimdan foydalaning.'; return; }
+    const perm = await SRn.requestPermissions(); if (!perm || perm.speechRecognition !== 'granted') { msg.textContent = 'Mikrofon va nutq aniqlashga ruxsat bering. 🎙️'; return; }
+    mic.classList.add('rec'); msg.textContent = 'Tinglayapman... gapiring! 👂';
+    const r = await SRn.start({ language: 'en-US', maxResults: 3, partialResults: false, popup: false });
+    const alts = ((r && r.matches) || []).map(t => ({ t })); if (!alts.length) { msg.textContent = 'Hech narsa eshitilmadi, yana urinib ko‘ring.'; return; }
+    coachResult(LG.scoreSpeech(alts, COACH.target));
+  } catch (e) { msg.textContent = 'Eshitolmadim, qayta urinib ko‘ring.'; }
+  finally { mic.classList.remove('rec'); }
+}
 ACT.record = async () => {
   if (!(await ensureConsent())) return;
+  if (!SR && nativeSR()) return recordNative();
   const mic = $('#mic'), msg = $('#coachMsg'); if (!mic || mic.classList.contains('rec')) return;
   const r = new SR(); r.lang = 'en-US'; r.maxAlternatives = 4; r.interimResults = false;
   try { if ('processLocally' in r) r.processLocally = true; } catch (e) { /* qurilmada qayta ishlash qo'llanmasa — oddiy rejim */ }

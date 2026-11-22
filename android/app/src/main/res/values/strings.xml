@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">LingoUz Kids</string>
+    <string name="title_activity_main">LingoUz Kids</string>
+    <string name="package_name">uz.mylogo.lingouz</string>
+    <string name="custom_url_scheme">uz.mylogo.lingouz</string>
+</resources>
