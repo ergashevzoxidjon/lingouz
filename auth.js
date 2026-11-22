@@ -13,7 +13,7 @@ const Net = {
     return data;
   },
   async login(login, password) {
-    const d = await this.api('/api/login', { method: 'POST', body: { login, password } });
+    const d = await this.api('api/login', { method: 'POST', body: { login, password } });
     if (d.role !== 'user') throw new Error('Bu sahifa o‘quvchilar uchun. Administrator uchun /admin sahifasi.');
     this.token = d.token; try { localStorage.setItem(TOKEN_KEY, d.token); } catch (e) { /* ... */ }
     return d.user;
@@ -26,7 +26,7 @@ const Net = {
   /* Holatni serverdan olish; server yetib bo'lmasa — keshdan (oflayn) */
   async loadState() {
     try {
-      const d = await this.api('/api/state');
+      const d = await this.api('api/state');
       const cached = (() => { try { return JSON.parse(localStorage.getItem('lingouz-cache-' + d.user.id) || 'null'); } catch (e) { return null; } })();
       // qurilmadagi kesh yangiroq bo'lsa (oflayn o'ynalgan) — o'shani saqlaymiz
       const useCache = cached && this.dirtyFlag(d.user.id) && (cached.stars || 0) >= (d.state.stars || 0);
@@ -46,7 +46,7 @@ const Net = {
   scheduleSync() { this.dirty = true; try { localStorage.setItem('lingouz-dirty', P.id); } catch (e) { /* ... */ } clearTimeout(this.syncTimer); this.syncTimer = setTimeout(() => this.syncNow(), 2500); },
   async syncNow() {
     if (!this.token || !P.id || !this.dirty) return;
-    try { await this.api('/api/state', { method: 'PUT', body: { state: S }, keepalive: true }); this.dirty = false; try { localStorage.removeItem('lingouz-dirty'); } catch (e) { /* ... */ } }
+    try { await this.api('api/state', { method: 'PUT', body: { state: S }, keepalive: true }); this.dirty = false; try { localStorage.removeItem('lingouz-dirty'); } catch (e) { /* ... */ } }
     catch (e) { if (e.status === 401) this.expired(); }
   },
   expired() { try { localStorage.removeItem(TOKEN_KEY); } catch (e) { /* ... */ } toast('Seans tugadi, qayta kiring'); setTimeout(() => location.reload(), 1200); },
@@ -60,7 +60,7 @@ const Net = {
   async flush() {
     if (!this.token || !this.queue.length || this.flushing) return;
     this.flushing = true; const batch = this.queue.slice(0, 150);
-    try { await this.api('/api/events', { method: 'POST', body: { events: batch }, keepalive: true }); this.queue.splice(0, batch.length); localStorage.setItem(QUEUE_KEY, JSON.stringify(this.queue)); if (this.queue.length) setTimeout(() => this.flush(), 300); }
+    try { await this.api('api/events', { method: 'POST', body: { events: batch }, keepalive: true }); this.queue.splice(0, batch.length); localStorage.setItem(QUEUE_KEY, JSON.stringify(this.queue)); if (this.queue.length) setTimeout(() => this.flush(), 300); }
     catch (e) { if (e.status === 401) this.expired(); }
     this.flushing = false;
   }

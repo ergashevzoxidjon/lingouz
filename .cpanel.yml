@@ -5,5 +5,5 @@ deployment:
   tasks:
     - export APP=$HOME/lingouz
     - /bin/mkdir -p $APP/tmp
-    - /bin/cp -R index.html admin.html admin.js admin.css ui.css app.js auth.js core.js pages.js games.js coach.js progress.js logic.js data.js data2.js data3.js server.js sw.js manifest.webmanifest package.json emoji icons audio $APP/
+    - /bin/cp -R index.html admin.html admin.js admin.css ui.css app.js base.js auth.js core.js pages.js games.js coach.js progress.js logic.js data.js data2.js data3.js server.js sw.js manifest.webmanifest package.json emoji icons audio $APP/
     - /bin/touch $APP/tmp/restart.txt

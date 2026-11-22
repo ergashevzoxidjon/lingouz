@@ -28,7 +28,7 @@ function loginView(msg) {
   <p class="lgmsg" role="alert">${esc(msg || '')}</p><button class="btn" type="submit">Kirish</button></form></div></div>`;
   $('#lf').onsubmit = async e => {
     e.preventDefault();
-    try { const d = await api('/api/login', { method: 'POST', body: { login: $('#lu').value, password: $('#lp').value } }); if (d.role !== 'admin') throw new Error('Bu hisob administrator emas.'); token = d.token; try { sessionStorage.setItem(TK, token); } catch (x) { /* ... */ } start(); }
+    try { const d = await api('api/login', { method: 'POST', body: { login: $('#lu').value, password: $('#lp').value } }); if (d.role !== 'admin') throw new Error('Bu hisob administrator emas.'); token = d.token; try { sessionStorage.setItem(TK, token); } catch (x) { /* ... */ } start(); }
     catch (err) { loginView(err.message); }
   };
 }
@@ -37,7 +37,7 @@ function logout() { token = ''; try { sessionStorage.removeItem(TK); } catch (e)
 /* ---------- Asosiy ko'rinish ---------- */
 async function start() {
   try {
-    const [sum, us] = await Promise.all([api('/api/admin/summary'), api('/api/admin/users')]);
+    const [sum, us] = await Promise.all([api('api/admin/summary'), api('api/admin/users')]);
     users = us.users;
     root.innerHTML = `<header class="a-top"><h1>🛡️ LingoUz Kids · Admin</h1><span class="spacer"></span><span class="a-credit">Malokhatkhon Toshboltayeva — LingoUz loyihasi</span><button class="btn sm ghost" id="pwBtn">🔑 Parol</button><button class="btn sm ghost" id="outBtn">Chiqish</button></header>
     <div class="a-wrap"><div class="a-sum">
@@ -55,7 +55,7 @@ async function start() {
   } catch (e) { loginView(e.message); }
 }
 async function start2() { // faqat ro'yxatni yangilash
-  const us = await api('/api/admin/users'); users = us.users; $$('#gf .tab').forEach(b => b.classList.toggle('on', +b.dataset.g === filter.grade)); renderList();
+  const us = await api('api/admin/users'); users = us.users; $$('#gf .tab').forEach(b => b.classList.toggle('on', +b.dataset.g === filter.grade)); renderList();
 }
 function renderList() {
   const q = filter.q.trim().toLowerCase();
@@ -67,14 +67,14 @@ function renderList() {
 /* ---------- O'quvchi tafsilotlari ---------- */
 async function openUser(id) {
   sel = id; renderList();
-  try { detail = await api('/api/admin/users/' + id); } catch (e) { return; }
+  try { detail = await api('api/admin/users/' + id); } catch (e) { return; }
   drawDetail();
 }
 function drawDetail() {
   const d = detail, u = d.user, s = d.stats, st = d.state || {};
   const ts = TOPICS.filter(t => t.grade === u.grade && /^g\dt\d$/.test(t.id)), next = ts.find(t => !s.done.includes(t.id));
   const head = `<div class="card c1 u-head"><div class="row"><span class="g g${u.grade} big">${u.grade}${esc(u.section)}</span><div><h2 style="margin:0">${esc(u.name)}</h2><div class="muted">Login: <b>${esc(u.login)}</b> · oxirgi kirish: ${ago(u.lastSeen)}${u.active ? '' : ' · <b style="color:#e11d48">bloklangan</b>'}</div></div><span class="spacer"></span>
-    <button class="btn sm ghost" data-a="pw">🔑 Parol</button><button class="btn sm ghost" data-a="grade">🎓 Sinf</button><button class="btn sm ghost" data-a="limit">⏱️ Vaqt</button><button class="btn sm ghost" data-a="toggle">${u.active ? '⛔ Bloklash' : '✅ Faollashtirish'}</button><a class="btn sm ghost" href="/api/admin/users/${u.id}/events.csv" data-csv>⬇️ CSV</a><button class="btn sm ghost" data-a="del">🗑️</button></div></div>`;
+    <button class="btn sm ghost" data-a="pw">🔑 Parol</button><button class="btn sm ghost" data-a="grade">🎓 Sinf</button><button class="btn sm ghost" data-a="limit">⏱️ Vaqt</button><button class="btn sm ghost" data-a="toggle">${u.active ? '⛔ Bloklash' : '✅ Faollashtirish'}</button><a class="btn sm ghost" href="api/admin/users/${u.id}/events.csv" data-csv>⬇️ CSV</a><button class="btn sm ghost" data-a="del">🗑️</button></div></div>`;
   const tabs = `<div class="tabs">${[['overview', '📊 Umumiy'], ['answers', '✍️ Javoblar'], ['games', '🎮 O‘yinlar'], ['speak', '🎤 Talaffuz']].map(t => `<button class="tab ${tab === t[0] ? 'on' : ''}" data-t="${t[0]}">${t[1]}</button>`).join('')}</div>`;
   let body = '';
   if (tab === 'overview') {
@@ -101,14 +101,14 @@ function drawDetail() {
   const csv = $('[data-csv]'); if (csv) csv.onclick = async e => { e.preventDefault(); const r = await fetch(csv.getAttribute('href'), { headers: { Authorization: 'Bearer ' + token } }); const a = document.createElement('a'); a.href = URL.createObjectURL(await r.blob()); a.download = u.login + '.csv'; a.click(); };
   ['fR', 'fG', 'fT'].forEach(id => { const el = $('#' + id); if (el) el.onchange = () => { ansFilter = { r: $('#fR').value, g: $('#fG').value, t: $('#fT').value }; drawDetail(); }; });
 }
-async function patch(body) { await api('/api/admin/users/' + sel, { method: 'PATCH', body }); await start2(); await openUser(sel); }
+async function patch(body) { await api('api/admin/users/' + sel, { method: 'PATCH', body }); await start2(); await openUser(sel); }
 async function userAction(a) {
   const u = detail.user;
   if (a === 'toggle') return patch({ active: !u.active });
   if (a === 'grade') { const g = prompt('Yangi sinf (1–4):', u.grade); if (g) { const sec = prompt('Sinf harfi (masalan A), bo‘sh qoldirish mumkin:', u.section || ''); try { await patch({ grade: +g, section: sec || '' }); } catch (e) { alert(e.message); } } return; }
   if (a === 'limit') { const m = prompt('Kunlik vaqt chegarasi (daqiqa, 0 = cheklovsiz):', u.limit || 0); if (m != null) try { await patch({ limit: +m }); } catch (e) { alert(e.message); } return; }
   if (a === 'pw') return credModal(u, true);
-  if (a === 'del') { if (confirm(`${u.name} butunlay o‘chiriladi (natijalari bilan). Qaytarib bo‘lmaydi. Davom etasizmi?`)) { await api('/api/admin/users/' + u.id, { method: 'DELETE' }); sel = null; detail = null; await start(); } }
+  if (a === 'del') { if (confirm(`${u.name} butunlay o‘chiriladi (natijalari bilan). Qaytarib bo‘lmaydi. Davom etasizmi?`)) { await api('api/admin/users/' + u.id, { method: 'DELETE' }); sel = null; detail = null; await start(); } }
 }
 
 /* ---------- Oynalar ---------- */
@@ -130,19 +130,19 @@ function addModal() {
   $('#aGen', d).onclick = () => { $('#aP', d).value = genPw(); }; $('#aX', d).onclick = () => d.remove();
   $('#af', d).onsubmit = async e => {
     e.preventDefault();
-    try { const body = { name: $('#aN', d).value, login: $('#aL', d).value, password: $('#aP', d).value, grade: +$('#aG', d).value, section: $('#aS', d).value, limit: +$('#aM', d).value }; const r = await api('/api/admin/users', { method: 'POST', body }); d.remove(); sel = r.user.id; await start(); showCreds(r.user.name, r.user.login, body.password); }
+    try { const body = { name: $('#aN', d).value, login: $('#aL', d).value, password: $('#aP', d).value, grade: +$('#aG', d).value, section: $('#aS', d).value, limit: +$('#aM', d).value }; const r = await api('api/admin/users', { method: 'POST', body }); d.remove(); sel = r.user.id; await start(); showCreds(r.user.name, r.user.login, body.password); }
     catch (err) { $('#aMsg', d).textContent = err.message; }
   };
 }
 function credModal(u) {
   const d = modal(`<h2>🔑 Yangi parol</h2><p><b>${esc(u.name)}</b> (${esc(u.login)}) uchun yangi parol:</p><div class="row"><input id="rP" type="text" value="${genPw()}" style="flex:1"><button class="btn sm ghost" id="rG">🎲</button></div><p class="lgmsg" id="rMsg"></p><div class="row"><button class="btn" id="rOk">Saqlash</button><button class="btn ghost" id="rX">Bekor</button></div>`);
   $('#rG', d).onclick = () => { $('#rP', d).value = genPw(); }; $('#rX', d).onclick = () => d.remove();
-  $('#rOk', d).onclick = async () => { const pw = $('#rP', d).value; try { await api('/api/admin/users/' + u.id, { method: 'PATCH', body: { password: pw } }); d.remove(); showCreds(u.name, u.login, pw); } catch (e) { $('#rMsg', d).textContent = e.message; } };
+  $('#rOk', d).onclick = async () => { const pw = $('#rP', d).value; try { await api('api/admin/users/' + u.id, { method: 'PATCH', body: { password: pw } }); d.remove(); showCreds(u.name, u.login, pw); } catch (e) { $('#rMsg', d).textContent = e.message; } };
 }
 function pwModal() {
   const d = modal(`<h2>🔑 Admin parolini o‘zgartirish</h2><form class="form" id="pf"><label>Joriy parol<input id="pC" type="password" autocomplete="current-password"></label><label>Yangi parol (kamida 8 belgi)<input id="pN" type="password" autocomplete="new-password"></label><p class="lgmsg" id="pM"></p><div class="row"><button class="btn" type="submit">Saqlash</button><button type="button" class="btn ghost" id="pX">Bekor</button></div></form>`);
   $('#pX', d).onclick = () => d.remove();
-  $('#pf', d).onsubmit = async e => { e.preventDefault(); try { await api('/api/admin/password', { method: 'POST', body: { current: $('#pC', d).value, password: $('#pN', d).value } }); d.remove(); alert('Parol o‘zgartirildi.'); } catch (err) { $('#pM', d).textContent = err.message; } };
+  $('#pf', d).onsubmit = async e => { e.preventDefault(); try { await api('api/admin/password', { method: 'POST', body: { current: $('#pC', d).value, password: $('#pN', d).value } }); d.remove(); alert('Parol o‘zgartirildi.'); } catch (err) { $('#pM', d).textContent = err.message; } };
 }
 
 if (token) start(); else loginView();

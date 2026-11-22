@@ -88,3 +88,14 @@ test('parolni o‘zgartirish admin uchun', async () => {
   assert.equal((await call('POST', '/api/admin/password', { current: 'adminpass123', password: 'newpassword1' }, adminTok)).status, 200);
   assert.equal((await call('POST', '/api/login', { login: 'admin', password: 'newpassword1' })).status, 200);
 });
+
+test('prefiks (mylogo.uz/lingouz/) bilan ishlash: slash qo‘shiladi, API va statik fayllar ochiladi', async () => {
+  const noRedirect = await fetch(base + '/lingouz', { redirect: 'manual' });
+  assert.equal(noRedirect.status, 301); assert.equal(noRedirect.headers.get('location'), '/lingouz/');
+  assert.equal((await call('GET', '/lingouz/')).status, 200);
+  assert.equal((await call('GET', '/lingouz/admin')).status, 200);
+  assert.equal((await call('GET', '/lingouz/api/me')).status, 401);
+  assert.equal((await call('GET', '/lingouz/server/db.json')).status, 404);
+  assert.equal((await call('GET', '/lingouz/base.js')).status, 200);
+  const l = await call('POST', '/lingouz/api/login', { login: 'admin', password: 'newpassword1' }); assert.equal(l.status, 200);
+});

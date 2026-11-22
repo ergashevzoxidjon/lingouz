@@ -203,9 +203,16 @@ function serveStatic(req, res, url) {
   });
 }
 
+// Ilova papkaga (masalan, mylogo.uz/lingouz/) joylanganda Passenger so'rovni prefiks bilan yuborishi mumkin — uni olib tashlaymiz.
+// Boshqa prefiks kerak bo'lsa BASE_PATH muhit o'zgaruvchisini qo'ying; bo'sh qiymat prefiksni o'chiradi.
+const BASE = (process.env.BASE_PATH === undefined ? '/lingouz' : process.env.BASE_PATH).replace(/\/+$/, '');
 const server = http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url, 'http://x');
+    if (BASE && (url.pathname === BASE || url.pathname.startsWith(BASE + '/'))) {
+      if (url.pathname === BASE) { res.writeHead(301, { Location: BASE + '/' + url.search, 'Cache-Control': 'no-cache' }); return res.end(); }   // /lingouz -> /lingouz/ (nisbiy manzillar uchun)
+      url.pathname = url.pathname.slice(BASE.length);
+    }
     if (url.pathname.startsWith('/api/')) return await api(req, res, url);
     if (req.method !== 'GET' && req.method !== 'HEAD') { res.writeHead(405); return res.end(); }
     serveStatic(req, res, url);
