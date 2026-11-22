@@ -1,0 +1,15 @@
+# maxfiy / mahalliy ma'lumotlar — hech qachon GitHub'ga chiqmasin
+server/db.json
+server/db.json.tmp
+server/*.json
+*.env
+.env*
+node_modules/
+.claude/
+speech-list.json
+# audio namunalari (ovoz tanlash uchun, ishlab chiqarishda kerak emas)
+audio/samples/
+# tizim fayllari
+Thumbs.db
+.DS_Store
+*.log

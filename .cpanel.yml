@@ -1,0 +1,9 @@
+---
+# cPanel → Git Version Control → "Deploy HEAD Commit" shu vazifalarni bajaradi.
+# MUHIM: CPANEL_USER ni hosting foydalanuvchi nomiga almashtiring (cPanel yuqori o'ng burchagida ko'rinadi).
+deployment:
+  tasks:
+    - export APP=/home/CPANEL_USER/lingouz
+    - /bin/mkdir -p $APP/tmp
+    - /bin/cp -R index.html admin.html admin.js admin.css ui.css app.js auth.js core.js pages.js games.js coach.js progress.js logic.js data.js data2.js data3.js server.js sw.js manifest.webmanifest package.json emoji icons audio $APP/
+    - /bin/touch $APP/tmp/restart.txt

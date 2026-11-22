@@ -1,0 +1,15 @@
+{
+  "name": "LingoUz Kids",
+  "short_name": "LingoUz",
+  "description": "1–4-sinf uchun ingliz tili: o'yna, o'rgan, kashf et!",
+  "lang": "uz",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#FFF8EE",
+  "theme_color": "#FF8A4C",
+  "icons": [
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

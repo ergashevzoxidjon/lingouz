@@ -1,0 +1,11 @@
+{
+  "name": "lingouz-kids",
+  "version": "3.0.0",
+  "private": true,
+  "description": "LingoUz Kids — 1–4-sinf uchun ingliz tili platformasi (Node serveri, admin paneli, PWA)",
+  "scripts": {
+    "test": "node --test tests/",
+    "start": "node server.js",
+    "emoji": "node tools/get-emoji.js"
+  }
+}

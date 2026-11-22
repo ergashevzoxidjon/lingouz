@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<title>LingoUz Kids — Ingliz tili bolalar uchun</title>
+<meta name="author" content="Malokhatkhon Toshboltayeva">
+<meta name="description" content="LingoUz Kids: 1–4-sinf o‘quvchilari uchun sun’iy intellektga asoslangan ingliz tili platformasi. O‘yna, o‘rgan, kashf et va ingliz tilida so‘zla!">
+<meta name="theme-color" content="#6d28d9">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="ui.css">
+</head>
+<body data-grade="1" class="logged-out">
+<a class="skip" href="#app">Asosiy tarkibga o‘tish</a>
+<div id="live" class="sr-only" aria-live="polite"></div>
+<div id="login"></div>
+
+<div id="shell">
+  <aside id="side" aria-label="Asosiy menyu">
+    <a class="brand" href="#/home" aria-label="LingoUz Kids — bosh sahifa"><span id="logo-m"></span><span class="bn">Lingo<b>Uz</b><small>Kids</small></span></a>
+    <nav id="nav"></nav>
+    <div class="side-foot"><b>Malokhatkhon Toshboltayeva — LingoUz loyihasi</b></div>
+  </aside>
+  <div id="col">
+    <header class="topbar">
+      <a class="brand-m" href="#/home"><span id="logo-m2"></span><b>LingoUz</b></a>
+      <span class="spacer"></span>
+      <span class="stars-pill" id="starsPill" title="Yulduzlar">⭐ 0</span>
+      <button class="hbtn" id="profBtn" data-act="profiles" aria-label="Hisob"></button>
+      <button class="hbtn ico" data-act="settings" aria-label="Sozlamalar">⚙️</button>
+    </header>
+    <main><div class="wrap" id="app" tabindex="-1"></div></main>
+    <footer><div class="wrap">
+      <b>LingoUz Kids</b> — Learn English, Play, Explore and Dream!<br>
+      <b class="credit">Malokhatkhon Toshboltayeva — LingoUz loyihasi</b><br>
+      <small><a href="#/privacy">🛡️ Maxfiylik</a> · <a href="#/about">Haqida</a> · Emoji: Twemoji (CC-BY 4.0)</small>
+    </div></footer>
+  </div>
+</div>
+<nav id="tabbar" aria-label="Tezkor menyu"></nav>
+<div id="sheet" aria-hidden="true"><div class="sheet-box"><div id="sheetNav"></div><button class="btn sm ghost" id="sheetClose">Yopish</button></div></div>
+
+<script src="data.js"></script>
+<script src="data2.js"></script>
+<script src="data3.js"></script>
+<script src="logic.js"></script>
+<script src="core.js"></script>
+<script src="auth.js"></script>
+<script src="pages.js"></script>
+<script src="games.js"></script>
+<script src="coach.js"></script>
+<script src="progress.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
