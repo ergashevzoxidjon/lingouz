@@ -21,6 +21,14 @@ Ranglar (50, rang namunasi bilan), Sonlar (50, raqam belgisi bilan), Hayvonlar (
 ## Tuzilma
 `server.js` — API + statik · `admin.html/js/css` — admin · `auth.js` — kirish, sinxron, hodisalar · `core.js` — holat, ovoz, maskot, router · `pages.js` · `games.js` · `coach.js` · `progress.js` · `logic.js` (sof mantiq) · `data*.js` — kontent · `ui.css` — dizayn (gradient "Candy Neon") · `sw.js` — oflayn · `docs/` — brend, pilot, biznes, yo'l xaritasi.
 
+## Hostingda (cPanel / Hostmaster) — `https://mylogo.uz/lingouz/`
+- Kod GitHub (`ergashevzoxidjon/lingouz`) → cPanel **Git™ Version Control** (`~/repositories/lingouz`) → `.cpanel.yml` fayllarni `~/lingouz` ga nusxalaydi.
+- cPanel → **Setup Node.js App**: Node 20, Production, Application root `lingouz`, Application URL `mylogo.uz` + `lingouz`, startup `server.js`. O'quvchilar: `https://mylogo.uz/lingouz/`, admin: `https://mylogo.uz/lingouz/admin`.
+- Ilova prefiksdan mustaqil: manzillar nisbiy (`base.js` + `<base>`), server `/lingouz` prefiksini o'zi tanib oladi (`BASE_PATH` bilan o'zgartiriladi).
+- **Yangilash:** push → cPanel → Git → **Update from Remote** → **Deploy HEAD Commit** (`tmp/restart.txt` ilovani qayta ishga tushiradi).
+- Baza `~/lingouz/server/db.json` da qoladi (repoda yo'q, deploy uni o'chirmaydi). Vaqti-vaqti bilan nusxa oling.
+- Birinchi admin paroli `~/lingouz/tmp/passenger.log` ga bir marta yozilgan; kirgach o'zgartiring.
+
 ## Xavfsizlik va cheklovlar (halol hisobot)
 - Parollar `scrypt` bilan xeshlanadi; token HMAC bilan imzolanadi (o'quvchi 30 kun, admin 12 soat); login urinishlari cheklangan (5 ta xato → 1 daqiqa); maxfiy fayllar (`server/`, `server.js`, `tests/`, `docs/`) HTTP orqali berilmaydi (testlangan); CSP sarlavhalari va CSV-injeksiyadan himoya bor.
 - **Internetda ishlatishdan oldin HTTPS (reverse proxy: nginx/Caddy) shart** — aks holda parollar ochiq uzatiladi. Server o'zi HTTPS bermaydi.
