@@ -38,4 +38,5 @@ Veb + PWA (bosh ekranga o'rnatish) hozir ishlaydi; native Android/iOS ilova loyi
 - Ma'lumotlar bazasi — bitta JSON fayl (yuzlab o'quvchi uchun yetarli; minglab o'quvchi va bir nechta server uchun haqiqiy bazaga o'ting).
 - **Yulduz va natijalar mijoz tomonidan yuboriladi** — texnik bilimli o'quvchi o'z yulduzini soxtalashtira olishi mumkin. Javoblar jurnali ham shu tarzda. Maktab ichidagi kuzatuv uchun yetarli; rasmiy baholash uchun serverda tekshiruv kerak.
 - Admin paroli unutilsa: `$env:ADMIN_PASSWORD="yangi-parol"; node server.js` — server shu parolni o'rnatadi (o'quvchilar ma'lumoti saqlanadi). Muhit o'zgaruvchisi qo'yilgan holda har ishga tushirishda parol qayta o'rnatiladi.
+- **Hostingda (cPanel), parolni hech qayerga yozmasdan tiklash:** File Manager'da `~/lingouz/tmp/reset-admin` nomli **bo'sh fayl** yarating va ilovani qayta ishga tushiring (`tmp/restart.txt` ni yangilang). Server yangi tasodifiy parol yaratadi, `tmp/passenger.log` ga yozadi va belgi faylini o'chiradi. Kirgach parolni o'zgartiring.
 - Real qurilmalarda sinov, haqiqiy audio, metodist ko'rigi, pilot — `docs/ROADMAP.md` (avvalgi hisobot o'zgarishsiz).

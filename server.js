@@ -34,8 +34,19 @@ function flushNow() {
   const tmp = DB_FILE + '.tmp'; fs.writeFileSync(tmp, JSON.stringify(db)); fs.renameSync(tmp, DB_FILE);
 }
 function persist() { clearTimeout(writeTimer); writeTimer = setTimeout(() => { try { flushNow(); } catch (e) { console.error('DB yozilmadi', e.message); } }, 400); }
+/* Admin parolini tiklash: server/tmp papkasida bo'sh `tmp/reset-admin` fayli bo'lsa, ishga tushishda yangi tasodifiy parol yaratiladi,
+   logga yoziladi va fayl o'chiriladi. Parolni hech kim yozmaydi (chatga/maydonga). Hosting fayl menejeriga kira olgan kishi bajaradi. */
+function resetAdminIfFlagged() {
+  const flag = process.env.RESET_FLAG_FILE || path.join(ROOT, 'tmp', 'reset-admin');
+  if (!fs.existsSync(flag)) return;
+  const pw = crypto.randomBytes(9).toString('base64url');
+  setPw(db.admin, pw); flushNow();
+  try { fs.unlinkSync(flag); } catch (e) { console.error("Tiklash belgisi o'chmadi:", e.message); }
+  console.log(['', '=== ADMIN PAROLI TIKLANDI ===', 'Admin login: admin', 'Admin parol: ' + pw, "(Kirgach parolni o'zgartiring.)", ''].join('\n'));
+}
 process.on('SIGINT', () => { try { flushNow(); } catch (e) { /* e'tiborsiz */ } process.exit(0); });
 loadDb();
+resetAdminIfFlagged();
 
 /* ---------- Token (HMAC imzo) ---------- */
 const b64 = o => Buffer.from(o).toString('base64url');

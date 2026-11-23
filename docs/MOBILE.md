@@ -15,7 +15,7 @@ Havola: `https://mylogo.uz/lingouz/`
 Ilova to'liq ekranda, o'z ikonkasi bilan ochiladi, ovoz va rasmlar internetsiz ham ishlaydi (birinchi ochilishdan keyin).
 
 ## 2. Android ilova (Capacitor)
-Bu kompyuterda Android Studio yo'q edi, shuning uchun APK yig'ilmadi. Loyiha (`android/`) tayyor.
+Sinov APK'si (debug, `uz.mylogo.lingouz`, minSdk 24 = Android 7+) komanda qatori orqali yig'ilgan va tekshirilgan (imzo v2, ruxsatlar: INTERNET, RECORD_AUDIO). Telefonga o'rnatish: APK'ni yuboring → faylni oching → «Noma'lum manbadan o'rnatish»ga ruxsat bering. Bu **debug** versiya: Google Play uchun emas (uning uchun o'z kalitingiz bilan imzolangan AAB kerak, pastga qarang). Loyiha (`android/`) tayyor.
 ```powershell
 npm install                 # bir marta
 npm run android             # veb fayllarni yig'adi (www/), Android Studio'ni ochadi
